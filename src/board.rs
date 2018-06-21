@@ -1,8 +1,8 @@
+use coord::Coord;
+use piece::*;
+use smallvec::SmallVec;
 use std::fmt;
 use std::ops::{Index, IndexMut};
-use smallvec::SmallVec;
-use piece::*;
-use coord::Coord;
 
 /// 盤面の1辺の長さの定数
 const MATRIX_SIZE: usize = 8;
@@ -199,8 +199,8 @@ impl fmt::Display for Board {
 
 #[cfg(test)]
 mod tests {
-    use piece::*;
     use super::*;
+    use piece::*;
 
     const SAMPLE_MATRIX: Matrix = Matrix([
         [N, N, W, W, N, B, N, N],
@@ -290,11 +290,7 @@ mod tests {
         let actual = b.get_move(Piece::White, Coord(0, 3));
         let expected = Move {
             pos: Coord(0, 3),
-            flips: [
-                0, 0, 0,
-                0,    1,
-                0, 1, 2,
-            ],
+            flips: [0, 0, 0, 0, 1, 0, 1, 2],
         };
         assert_eq!(expected, actual);
     }
@@ -306,51 +302,27 @@ mod tests {
         let candidates = vec![
             Move {
                 pos: Coord(4, 0),
-                flips: [
-                    0, 0, 0,
-                    0,    0,
-                    0, 0, 1,
-                ],
+                flips: [0, 0, 0, 0, 0, 0, 0, 1],
             },
             Move {
                 pos: Coord(6, 1),
-                flips: [
-                    0, 0, 0,
-                    1,    0,
-                    0, 0, 0,
-                ],
+                flips: [0, 0, 0, 1, 0, 0, 0, 0],
             },
             Move {
                 pos: Coord(0, 3),
-                flips: [
-                    0, 0, 0,
-                    0,    1,
-                    0, 1, 2,
-                ],
+                flips: [0, 0, 0, 0, 1, 0, 1, 2],
             },
             Move {
                 pos: Coord(1, 5),
-                flips: [
-                    0, 2, 0,
-                    0,    1,
-                    0, 0, 0,
-                ],
+                flips: [0, 2, 0, 0, 1, 0, 0, 0],
             },
             Move {
                 pos: Coord(1, 6),
-                flips: [
-                    0, 0, 1,
-                    0,    1,
-                    0, 0, 0,
-                ],
+                flips: [0, 0, 1, 0, 1, 0, 0, 0],
             },
             Move {
                 pos: Coord(6, 6),
-                flips: [
-                    0, 1, 0,
-                    0,    0,
-                    0, 0, 0,
-                ],
+                flips: [0, 1, 0, 0, 0, 0, 0, 0],
             },
         ];
         assert_eq!(6, actual.len());
@@ -398,11 +370,7 @@ mod tests {
             Piece::White,
             &Move {
                 pos: Coord(0, 3),
-                flips: [
-                    0, 0, 0,
-                    0,    1,
-                    0, 1, 2,
-                ],
+                flips: [0, 0, 0, 0, 1, 0, 1, 2],
             },
         );
         assert_eq!(27, b.white);

@@ -1,5 +1,5 @@
-use piece::Piece;
 use board::{Board, Move};
+use piece::Piece;
 
 pub struct Game<P1, P2> {
     board: Board,
@@ -34,7 +34,7 @@ where
             Some(mov) => {
                 self.board.do_move(self.turn, &mov);
                 self.is_passed = false;
-            },
+            }
             None => {
                 if self.is_passed {
                     // game is over

@@ -1,5 +1,5 @@
-use std::ops::{Add, AddAssign};
 use std::fmt;
+use std::ops::{Add, AddAssign};
 
 /// ベクトルを表現する構造体
 #[derive(Debug, Clone, Copy, PartialEq)]

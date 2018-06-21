@@ -1,7 +1,7 @@
-use std::io;
-use piece::Piece;
 use board::{Board, Move};
 use game::Play;
+use piece::Piece;
+use std::io;
 
 pub struct Human;
 impl Play for Human {

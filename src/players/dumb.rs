@@ -1,6 +1,6 @@
-use piece::Piece;
 use board::{Board, Move};
 use game::Play;
+use piece::Piece;
 
 pub struct DumbPlayer;
 impl Play for DumbPlayer {

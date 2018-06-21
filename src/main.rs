@@ -1,10 +1,10 @@
-extern crate smallvec;
 extern crate rayon;
+extern crate smallvec;
 
-mod piece;
-mod coord;
 mod board;
+mod coord;
 mod game;
+mod piece;
 mod players;
 
 use game::Game;

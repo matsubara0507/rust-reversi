@@ -1,7 +1,7 @@
-use rayon::prelude::*;
-use piece::Piece;
 use board::{Board, Move};
 use game::Play;
+use piece::Piece;
+use rayon::prelude::*;
 
 pub struct NegaMaxPlayer {
     depth: usize,
@@ -23,12 +23,16 @@ impl NegaMaxPlayer {
             return (self.evaluate(piece, &board), None);
         }
         let moves = board.moves(piece);
-        moves.into_iter().map(|mov| {
-            let mut board = board.clone();
-            board.do_move(piece, &mov);
-            let (score, _) = self.negamax(piece.opponent(), &board, depth - 1);
-            (-score, Some(mov))
-        }).max_by_key(|&(score, _)| score).unwrap_or((-127, None))
+        moves
+            .into_iter()
+            .map(|mov| {
+                let mut board = board.clone();
+                board.do_move(piece, &mov);
+                let (score, _) = self.negamax(piece.opponent(), &board, depth - 1);
+                (-score, Some(mov))
+            })
+            .max_by_key(|&(score, _)| score)
+            .unwrap_or((-127, None))
     }
 
     fn negamax_mt(&self, piece: Piece, board: &Board, depth: usize) -> (i8, Option<Move>) {
@@ -36,12 +40,16 @@ impl NegaMaxPlayer {
             return (self.evaluate(piece, &board), None);
         }
         let moves = board.moves(piece);
-        let (score, mov) = moves.into_par_iter().map(|mov| {
-            let mut board = board.clone();
-            board.do_move(piece, &mov);
-            let (score, _) = self.negamax(piece.opponent(), &board, depth - 1);
-            (-score, Some(mov))
-        }).max_by_key(|&(score, _)| score).unwrap_or((-127, None));
+        let (score, mov) = moves
+            .into_par_iter()
+            .map(|mov| {
+                let mut board = board.clone();
+                board.do_move(piece, &mov);
+                let (score, _) = self.negamax(piece.opponent(), &board, depth - 1);
+                (-score, Some(mov))
+            })
+            .max_by_key(|&(score, _)| score)
+            .unwrap_or((-127, None));
         (score, mov.map(Clone::clone))
     }
 }

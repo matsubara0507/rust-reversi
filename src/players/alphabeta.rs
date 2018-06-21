@@ -1,7 +1,7 @@
-use std::cmp;
-use piece::Piece;
 use board::{Board, Move};
 use game::Play;
+use piece::Piece;
+use std::cmp;
 
 pub struct AlphaBetaPlayer {
     depth: usize,
@@ -18,7 +18,14 @@ impl AlphaBetaPlayer {
         }
     }
 
-    fn alphabeta(&self, piece: Piece, board: &Board, mut al: i8, be: i8, depth: usize) -> (i8, Option<Move>) {
+    fn alphabeta(
+        &self,
+        piece: Piece,
+        board: &Board,
+        mut al: i8,
+        be: i8,
+        depth: usize,
+    ) -> (i8, Option<Move>) {
         if depth == 0 {
             return (self.evaluate(piece, &board), None);
         }
