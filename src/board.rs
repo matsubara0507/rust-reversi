@@ -48,7 +48,11 @@ impl Index<Coord> for Matrix {
     ///
     /// 座標が盤面の範囲外であった場合は None が返る。
     fn index(&self, index: Coord) -> &Self::Output {
-        unimplemented!();
+        if self.is_in_range(index) {
+            &self.0[index.1 as usize][index.0 as usize]
+        } else {
+            &None
+        }
     }
 }
 /// `[]=` 演算子のオーバーロード
@@ -57,7 +61,7 @@ impl IndexMut<Coord> for Matrix {
     ///
     /// 座標が盤面の範囲外であった場合の挙動は未定義
     fn index_mut(&mut self, index: Coord) -> &mut Self::Output {
-        unimplemented!();
+        &mut self.0[index.1 as usize][index.0 as usize]
     }
 }
 impl fmt::Display for Matrix {
@@ -150,27 +154,62 @@ impl Board {
     /// * `piece` - 置く石の色
     /// * `pos` - 石を置く位置
     /// * `dir` - ひっくり返せる石を探す方向。`DIRECTIONS` の要素のいずれかが渡される
-    fn get_flip(&self, piece: Piece, mut pos: Coord, dir: Coord) -> u8 {
-        unimplemented!();
+    fn get_flip(&self, piece: Piece, pos: Coord, dir: Coord) -> u8 {
+        if self.matrix.is_in_range(pos) && self.matrix[pos] == None {
+            self.go_get_flip(piece, pos, dir).unwrap_or(0)
+        } else {
+            0
+        }
+    }
+
+    fn go_get_flip(&self, piece: Piece, pos: Coord, dir: Coord) -> Option<u8> {
+        let target = pos + dir;
+        if self.matrix.is_in_range(target) {
+            if self.matrix[target] == Some(piece.opponent()) {
+                self.go_get_flip(piece, target, dir).map(|x| x + 1)
+            } else if self.matrix[target] == Some(piece) {
+                Some(0)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
     }
 
     /// 指定の色の石を指定の位置に置いたときの `Move` を返す
     ///
     /// 戻り値の `Move` には8方向分の `get_flip` の結果が含まれる
     fn get_move(&self, piece: Piece, pos: Coord) -> Move {
-        unimplemented!();
+        let mut flips = ZERO_FLIP.clone();
+        for (i, dir) in DIRECTIONS.iter().enumerate() {
+            flips[i as usize] = self.get_flip(piece, pos, *dir)
+        }
+        Move { pos, flips }
     }
 
     /// 合法な Move のリストを返す
     ///
     /// 盤面の左上から右下まで走査して、合法手を探し出す
     pub fn moves(&self, piece: Piece) -> Moves {
-        unimplemented!();
+        let mut moves = Moves::new();
+        for x in 0..MATRIX_SIZE {
+            for y in 0..MATRIX_SIZE {
+                let mov = self.get_move(piece, Coord(x as i8, y as i8));
+                if mov.is_legal() {
+                    moves.push(mov)
+                }
+            }
+        }
+        moves
     }
 
     /// 指定の色のカウンタへのミュータブルな参照を返す
     fn count_mut(&mut self, piece: Piece) -> &mut u8 {
-        unimplemented!();
+        match piece {
+            Piece::Black => &mut self.black,
+            Piece::White => &mut self.white,
+        }
     }
 
     /// 石を指定の位置から指定の方向へ指定の数だけ指定の色にひっくり返す
@@ -181,13 +220,36 @@ impl Board {
     /// * `flip` - ひっくり返す枚数
     ///
     /// ひっくり返した分だけ `black`/`white` の数を増減させる必要がある
-    fn do_flip(&mut self, piece: Piece, mut pos: Coord, dir: Coord, flip: u8) {
-        unimplemented!();
+    fn do_flip(&mut self, piece: Piece, pos: Coord, dir: Coord, flip: u8) {
+        let mut target = pos + dir;
+        for _ in 0..flip {
+            self.matrix[target] = Some(piece);
+            match piece {
+                Piece::Black => {
+                    self.black += 1;
+                    self.white -= 1
+                }
+                Piece::White => {
+                    self.white += 1;
+                    self.black -= 1
+                }
+            }
+            target += dir;
+        }
     }
 
     /// 指定の色で指定の「手」を打つ
     pub fn do_move(&mut self, piece: Piece, mov: &Move) {
-        unimplemented!();
+        if self.matrix[mov.pos] == None {
+            self.matrix[mov.pos] = Some(piece);
+            match piece {
+                Piece::Black => self.black += 1,
+                Piece::White => self.white += 1,
+            }
+            for (i, flip) in mov.flips.iter().enumerate() {
+                self.do_flip(piece, mov.pos, DIRECTIONS[i], *flip)
+            }
+        }
     }
 }
 impl fmt::Display for Board {
