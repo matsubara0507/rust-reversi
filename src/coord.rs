@@ -9,13 +9,14 @@ pub struct Coord(pub i8, pub i8);
 impl Add for Coord {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
-        unimplemented!();
+        Coord(self.0 + rhs.0, self.1 + rhs.1)
     }
 }
 /// `+=` 演算子のオーバーロード
 impl AddAssign for Coord {
     fn add_assign(&mut self, rhs: Self) {
-        unimplemented!();
+        self.0 += rhs.0;
+        self.1 += rhs.1;
     }
 }
 const X_AXIS: [char; 8] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
