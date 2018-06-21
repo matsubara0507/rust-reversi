@@ -262,7 +262,6 @@ impl fmt::Display for Board {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use piece::*;
 
     const SAMPLE_MATRIX: Matrix = Matrix([
         [N, N, W, W, N, B, N, N],
