@@ -155,23 +155,15 @@ impl Board {
     /// * `pos` - 石を置く位置
     /// * `dir` - ひっくり返せる石を探す方向。`DIRECTIONS` の要素のいずれかが渡される
     fn get_flip(&self, piece: Piece, pos: Coord, dir: Coord) -> u8 {
-        if self.matrix.is_in_range(pos) && self.matrix[pos] == None {
-            self.go_get_flip(piece, pos, dir).unwrap_or(0)
-        } else {
-            0
-        }
+        self.go_get_flip(piece, pos, dir).unwrap_or(0)
     }
 
     fn go_get_flip(&self, piece: Piece, pos: Coord, dir: Coord) -> Option<u8> {
         let target = pos + dir;
-        if self.matrix.is_in_range(target) {
-            if self.matrix[target] == Some(piece.opponent()) {
-                self.go_get_flip(piece, target, dir).map(|x| x + 1)
-            } else if self.matrix[target] == Some(piece) {
-                Some(0)
-            } else {
-                None
-            }
+        if self.matrix[target] == Some(piece.opponent()) {
+            self.go_get_flip(piece, target, dir).map(|x| x + 1)
+        } else if self.matrix[target] == Some(piece) {
+            Some(0)
         } else {
             None
         }
@@ -182,8 +174,10 @@ impl Board {
     /// 戻り値の `Move` には8方向分の `get_flip` の結果が含まれる
     fn get_move(&self, piece: Piece, pos: Coord) -> Move {
         let mut flips = ZERO_FLIP.clone();
-        for (i, dir) in DIRECTIONS.iter().enumerate() {
-            flips[i as usize] = self.get_flip(piece, pos, *dir)
+        if self.matrix[pos] == None {
+            for (i, dir) in DIRECTIONS.iter().enumerate() {
+                flips[i as usize] = self.get_flip(piece, pos, *dir)
+            }
         }
         Move { pos, flips }
     }
